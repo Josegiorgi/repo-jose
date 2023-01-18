@@ -3,7 +3,6 @@
 #include "string"
 #include "vector"
 #include "imagen.h"
-#include <espaciodetrabajo.h>
 #include "archivo.h"
 #include "archivoaic.h"
 #include "archivopnm.h"
@@ -15,22 +14,39 @@ class GestordeArchivos
 {
 public:
     GestordeArchivos();
+    ~GestordeArchivos();
     Imagen generarImagen(int pID);
     void guardarImagen(string nombreImagen, Imagen& imagen);
 
     const string &getRaiz() const;
     void setRaiz(const string &newRaiz);
-
     const string &getRuta() const;
     void setRuta(const string &newRuta);
 
+    void setListadoDeArchivos(string rutaDirectorio);
+    vector<string> getListadoDeArchivos(string rutaDirectorio);
+    string getArchivos(int ID);
+
+    const vector<string> &getListaCarpeta() const;
+    void setListaCarpeta(string RutaAcarpeta, int ID);
+
+
+    int getIDimagen() const;
+    void setIDimagen(int opcion);
+
+
+
 private:
-    EspaciodeTrabajo espaciodetrabajo; //genera un vector que luego usara gestor de archivo para generar los objetos imagen
+
     string reconocerFormato();//reconoce si es pnm o aic
     string raiz, ruta;//info que pasara al espacio de trabajo para pedirle un vector con nombres de archivos
-    //objeto archivo
-    int ID;
+    vector<string> listaArchivos;
+    vector<string> listaCarpeta;
+    string RutaACarpeta;
+
+    int IDimagen;
     Archivo *ptrArchivo;
+
 };
 
 #endif // GESTORDEARCHIVOS_H

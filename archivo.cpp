@@ -4,3 +4,8 @@ Archivo::Archivo()
 {
 
 }
+
+Archivo::~Archivo()
+{
+
+}

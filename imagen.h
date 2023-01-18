@@ -24,9 +24,12 @@ public:
     const string &getDescripcion() const;
     void setDescripcion(const string &newDescripcion);
 
+    const vector<vector<Pixel> > &getImagen() const;
+    void setImagen(const vector<vector<Pixel> > &newImagen);
+
 private:
-    vector<vector<Pixel>> matrizimagen;
-    int alto, ancho, fila, columna;
+    vector<vector<Pixel>> imagen;
+    int alto, ancho;
     int RangoDinamico;
     string codigo, descripcion;
 

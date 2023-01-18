@@ -7,12 +7,12 @@ Imagen::Imagen()
 
 void Imagen::GenerarPixel(Pixel pixel , int fila, int columna)
 {
-    matrizimagen[fila][columna] = pixel;
+    imagen[fila][columna] = pixel;
 }
 
 Pixel Imagen::DevolverPixel(int fila, int columna)
 {
-    return matrizimagen [fila][columna];
+    return imagen [fila][columna];
 }
 
 int Imagen::getAlto() const
@@ -46,10 +46,10 @@ void Imagen::setRangoDinamico(int M)
 }
 void Imagen::dimensionar()
 {
-    matrizimagen.resize(alto);
+    imagen.resize(alto);
     for (int i=0; i<alto; i++)
     {
-        matrizimagen[i].resize(ancho);
+       imagen[i].resize(ancho);
     }
 }
 
@@ -71,5 +71,15 @@ const string &Imagen::getDescripcion() const
 void Imagen::setDescripcion(const string &newDescripcion)
 {
     descripcion = newDescripcion;
+}
+
+const vector<vector<Pixel> > &Imagen::getImagen() const
+{
+    return imagen;
+}
+
+void Imagen::setImagen(const vector<vector<Pixel> > &newImagen)
+{
+   imagen = newImagen;
 }
 

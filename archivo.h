@@ -1,6 +1,9 @@
 #ifndef ARCHIVO_H
 #define ARCHIVO_H
+#include "imagen.h"
+#include "string"
 
+using namespace std;
 
 class Archivo
 {

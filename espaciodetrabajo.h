@@ -10,10 +10,12 @@ class EspaciodeTrabajo
 public:
     EspaciodeTrabajo();
     void setListadoDeArchivos(string rutaDirectorio);
-    string getListadoDeArchivos(int ID);
+    vector<string> getListadoDeArchivos(string rutaDirectorio);
+
 
 private:
-    vector <string> listadoDeArchivos;
+    vector<string> listaArchivos;
+
 };
 
 

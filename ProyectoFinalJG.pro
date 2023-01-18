@@ -11,7 +11,6 @@ SOURCES += \
         archivo.cpp \
         archivoaic.cpp \
         archivopnm.cpp \
-        espaciodetrabajo.cpp \
         gestordearchivos.cpp \
         imagen.cpp \
         interfazdeusuario.cpp \
@@ -28,7 +27,6 @@ HEADERS += \
     archivo.h \
     archivoaic.h \
     archivopnm.h \
-    espaciodetrabajo.h \
     gestordearchivos.h \
     imagen.h \
     interfazdeusuario.h \

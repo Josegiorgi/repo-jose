@@ -1,6 +1,7 @@
 #ifndef ARCHIVOAIC_H
 #define ARCHIVOAIC_H
 #include "archivo.h"
+#include "imagen.h"
 
 class ArchivoAIC : public Archivo
 {
