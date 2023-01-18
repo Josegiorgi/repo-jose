@@ -29,7 +29,7 @@ Imagen GestordeArchivos::generarImagen(int pID)
         ptrArchivo = new ArchivoAIC;
     else (throw (string) "No se reconoce");
 
-    imagen = ptrArchivo->leerImagen(getArchivos(pID));
+    imagen = ptrArchivo->leerImagen(RutaCarpeta + getArchivos(pID));
 
     delete ptrArchivo;
     return imagen;
@@ -54,11 +54,11 @@ const vector<string> &GestordeArchivos::getListaCarpeta() const
     return listaCarpeta;
 }
 
-void GestordeArchivos::setListaCarpeta(string RutaAcarpeta, int ID)
+void GestordeArchivos::setListaCarpeta(string Ruta, int ID)
 {
-    string ruta =  RutaAcarpeta + getArchivos(ID) + "/";
+    RutaCarpeta =  Ruta + getArchivos(ID-1) + "/";
     listaArchivos.clear();
-    listaCarpeta = getListadoDeArchivos(ruta);
+    listaCarpeta = getListadoDeArchivos(RutaCarpeta);
 }
 
 int GestordeArchivos::getIDimagen() const
@@ -80,23 +80,23 @@ void GestordeArchivos::setRuta(const string &newRuta)
     ruta = newRuta;
 }
 
-void GestordeArchivos::setListadoDeArchivos(string rutaDirectorio)
-{
+//void GestordeArchivos::setListadoDeArchivos(string rutaDirectorio)
+//{
 
-    vector<string> Lista = getListadoDeArchivos(rutaDirectorio);
-    string extension;
-    string nombre;
+//    vector<string> Lista = getListadoDeArchivos(rutaDirectorio);
+//    string extension;
+//    string nombre;
 
-    for(unsigned int i=0 ; i<Lista.size() ; i++)
-    {
-        nombre = Lista[i];
-        extension = nombre.substr(nombre.find_last_of('.'), nombre.size());
-        if(extension == ".pbm" or  extension == ".pgm" or  extension == ".ppm" or  extension == ".pnm" or extension == ".aic")
-        {
-            listaArchivos.push_back(nombre);
-        }
-    }
-}
+//    for(unsigned int i=0 ; i<Lista.size() ; i++)
+//    {
+//        nombre = Lista[i];
+//        extension = nombre.substr(nombre.find_last_of('.'), nombre.size());
+//        if(extension == ".pbm" or  extension == ".pgm" or  extension == ".ppm" or  extension == ".pnm" or extension == ".aic")
+//        {
+//            listaArchivos.push_back(nombre);
+//        }
+//    }
+//}
 
 vector<string> GestordeArchivos::getListadoDeArchivos(string rutaDirectorio)
 {
@@ -129,6 +129,6 @@ void GestordeArchivos::setRaiz(const string &newRaiz)
 }
 string GestordeArchivos::getArchivos(int ID)
 {
-    return listaArchivos[ID];
+    return listaArchivos[ID-1];
 }
 

@@ -56,6 +56,7 @@ Imagen ArchivoAIC::leerImagen(string nombreArchivo)
     archi.ignore();
     int valor, repeticion, pixelesFila = 0;
     vector<vector<Pixel>> matrizimagen;
+    imagen.dimensionar();
 
     for(int i=0 ; i<imagen.getAlto() ; i++)
     {

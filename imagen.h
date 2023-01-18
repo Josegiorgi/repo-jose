@@ -27,11 +27,17 @@ public:
     const vector<vector<Pixel> > &getImagen() const;
     void setImagen(const vector<vector<Pixel> > &newImagen);
 
+
+
+    int getCodigonumerico() const;
+    void setCodigonumerico(int newCodigonumerico);
+
 private:
     vector<vector<Pixel>> imagen;
     int alto, ancho;
     int RangoDinamico;
     string codigo, descripcion;
+    int codigonumerico;
 
 };
 #endif // IMAGEN_H

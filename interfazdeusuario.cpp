@@ -11,7 +11,7 @@ void InterfazdeUsuario::MostrarMenudeOpciones(vector<string> lista)
 {
    for(int i=0; i<lista.size(); i++)
    {
-    cout<<i<<")"<<lista[i]<<endl;
+    cout<<i+1<<")"<<lista[i]<<endl;
    }
    cout<<endl;
 }

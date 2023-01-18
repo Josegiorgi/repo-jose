@@ -80,6 +80,18 @@ const vector<vector<Pixel> > &Imagen::getImagen() const
 
 void Imagen::setImagen(const vector<vector<Pixel> > &newImagen)
 {
-   imagen = newImagen;
+    imagen = newImagen;
 }
+
+int Imagen::getCodigonumerico() const
+{
+    return codigonumerico;
+}
+
+void Imagen::setCodigonumerico(int newCodigonumerico)
+{
+    codigonumerico = newCodigonumerico;
+}
+
+
 

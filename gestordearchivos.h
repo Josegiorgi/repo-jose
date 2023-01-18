@@ -17,18 +17,19 @@ public:
     ~GestordeArchivos();
     Imagen generarImagen(int pID);
     void guardarImagen(string nombreImagen, Imagen& imagen);
+    string reconocerFormato();
 
     const string &getRaiz() const;
     void setRaiz(const string &newRaiz);
     const string &getRuta() const;
     void setRuta(const string &newRuta);
 
-    void setListadoDeArchivos(string rutaDirectorio);
+    //void setListadoDeArchivos(string rutaDirectorio);
     vector<string> getListadoDeArchivos(string rutaDirectorio);
     string getArchivos(int ID);
 
     const vector<string> &getListaCarpeta() const;
-    void setListaCarpeta(string RutaAcarpeta, int ID);
+    void setListaCarpeta(string Ruta, int ID);
 
 
     int getIDimagen() const;
@@ -38,11 +39,11 @@ public:
 
 private:
 
-    string reconocerFormato();//reconoce si es pnm o aic
+    //string reconocerFormato();//reconoce si es pnm o aic
     string raiz, ruta;//info que pasara al espacio de trabajo para pedirle un vector con nombres de archivos
     vector<string> listaArchivos;
     vector<string> listaCarpeta;
-    string RutaACarpeta;
+    string RutaCarpeta;
 
     int IDimagen;
     Archivo *ptrArchivo;
