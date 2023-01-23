@@ -1,5 +1,6 @@
 QT -= gui
-
+QT += gui widgets
+LIBS += -lOpenGL32
 CONFIG += c++11 console
 CONFIG -= app_bundle
 

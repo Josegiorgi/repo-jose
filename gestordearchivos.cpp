@@ -33,13 +33,22 @@ Imagen GestordeArchivos::generarImagen(int pID)
 
     delete ptrArchivo;
     return imagen;
-
-    // reconocerFormato();
 }
 
 void GestordeArchivos::guardarImagen(string nombreImagen, Imagen &imagen)
 {
+  string directorio = "../Imagenes_guardadas/" + nombreImagen;
+  string codigo = imagen.getCodigo();
 
+  if (codigo=="P2C")
+  {
+      ptrArchivo= new ArchivoAIC;
+  }
+  else
+      ptrArchivo = new ArchivoPNM;
+
+  ptrArchivo-> escribirImagen(imagen,directorio);
+  delete ptrArchivo;
 }
 
 string GestordeArchivos::reconocerFormato() //lleva control de error
@@ -80,23 +89,23 @@ void GestordeArchivos::setRuta(const string &newRuta)
     ruta = newRuta;
 }
 
-//void GestordeArchivos::setListadoDeArchivos(string rutaDirectorio)
-//{
+void GestordeArchivos::setListadoDeArchivos(string rutaDirectorio)
+{
 
-//    vector<string> Lista = getListadoDeArchivos(rutaDirectorio);
-//    string extension;
-//    string nombre;
+    vector<string> Lista = getListadoDeArchivos(rutaDirectorio);
+    string extension;
+    string nombre;
 
-//    for(unsigned int i=0 ; i<Lista.size() ; i++)
-//    {
-//        nombre = Lista[i];
-//        extension = nombre.substr(nombre.find_last_of('.'), nombre.size());
-//        if(extension == ".pbm" or  extension == ".pgm" or  extension == ".ppm" or  extension == ".pnm" or extension == ".aic")
-//        {
-//            listaArchivos.push_back(nombre);
-//        }
-//    }
-//}
+    for(unsigned int i=0 ; i<Lista.size() ; i++)
+    {
+        nombre = Lista[i];
+        extension = nombre.substr(nombre.find_last_of('.'), nombre.size());
+        if(extension == ".pbm" or  extension == ".pgm" or  extension == ".ppm" or  extension == ".pnm" or extension == ".aic")
+        {
+            listaArchivos.push_back(nombre);
+        }
+    }
+}
 
 vector<string> GestordeArchivos::getListadoDeArchivos(string rutaDirectorio)
 {

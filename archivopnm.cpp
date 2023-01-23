@@ -27,8 +27,7 @@ Imagen ArchivoPNM::leerImagen(string nombreArchivo)
         cout<<"SE ABRE ARHCIVO"<<endl;
         {   //leer codigo
             archi>>codigo;
-            cout<<codigo<<endl;
-            //imagen.setCodigo(codigo);
+            imagen.setCodigo(codigo);
             archi>>numeral;
             if (numeral != "#")
             {
@@ -40,24 +39,20 @@ Imagen ArchivoPNM::leerImagen(string nombreArchivo)
             //leer descripcion
             getline(archi, descripcion);
             descripcion.erase(0,1);
-            cout<<descripcion<<endl;
-            //imagen.setDescripcion(descripcion);
+            imagen.setDescripcion(descripcion);
         }
         {
             //leer tamanio
             archi>>columna>>fila;
-            cout<<columna<<" "<<fila<<endl;
-            //imagen.setAlto(fila);
-            //imagen.setAncho(columna);
+            imagen.setAlto(fila);
+            imagen.setAncho(columna);
         }
         {
             //leer M
             archi>>M;
-            cout<<M;
-            //imagen.setRangoDinamico(M);
-        }}
+            imagen.setRangoDinamico(M);
+        }
 
-    else cout<<"No se abre"<<endl;
 
     if (codigo == "P1")
     {
@@ -98,15 +93,75 @@ Imagen ArchivoPNM::leerImagen(string nombreArchivo)
     case 6: LeerP6(imagen, archi);
         break;
     default: cout<< "No se reconoce el codigo de la imagen a guardar.";
-    }
+    }}
+    else cout<<"No se abre"<<endl;
     return imagen;
 }
 
 
 
-void ArchivoPNM::escribirImagen(Imagen &imagen, string nombreArchivo, string directorio)
+void ArchivoPNM::escribirImagen(Imagen &imagen, string directorio)
 {
+    string tipoImagen = imagen.getCodigo();
+    agregarExtensionPNM(imagen, directorio);
 
+    ofstream archisalida;
+    archisalida.open (directorio);
+    if (archisalida.is_open())
+    {
+        cout<<"SE GUARDA ARCHIVO";
+        archisalida<<imagen.getCodigo();
+        archisalida<<"# "<<imagen.getDescripcion();
+        archisalida<<imagen.getAncho()<<" "<<imagen.getAlto();
+
+        if (tipoImagen != "P1" and tipoImagen != "P4")
+        {
+            archisalida<<imagen.getRangoDinamico()<<endl;
+        }
+
+        if (tipoImagen == "P1")
+        {
+            imagen.setCodigonumerico(1);
+        }
+        if (tipoImagen == "P2")
+        {
+            imagen.setCodigonumerico(2);
+        }
+        if (tipoImagen == "P3")
+        {
+            imagen.setCodigonumerico(3);
+        }
+        if (tipoImagen == "P4")
+        {
+            imagen.setCodigonumerico(4);
+        }
+        if (tipoImagen == "P5")
+        {
+            imagen.setCodigonumerico(5);
+        }
+        if (tipoImagen == "P6")
+        {
+            imagen.setCodigonumerico(6);
+        }
+
+        switch (imagen.getCodigonumerico()){
+        case 1: AlmacenarP1(imagen, archisalida);
+            break;
+        case 2: AlmacenarP2(imagen, archisalida);
+            break;
+        case 3: AlmacenarP3(imagen, archisalida);
+            break;
+        case 4: AlmacenarP4(imagen, archisalida);
+            break;
+        case 5: AlmacenarP5(imagen, archisalida);
+            break;
+        case 6: AlmacenarP6(imagen, archisalida);
+            break;
+        default: cout<< "No se reconoce el codigo de la imagen a guardar.";
+        }
+    archisalida.close();
+    }
+    else cout<<"No se pudo crear archisalida";
 }
 
 void ArchivoPNM::LeerP1(Imagen &imagen, ifstream &archi)
@@ -202,7 +257,7 @@ void ArchivoPNM::LeerP5(Imagen &imagen, ifstream &archi)
 
 void ArchivoPNM::LeerP6(Imagen &imagen, ifstream &archi)
 {
-    float r, g, b;
+    char r, g, b;
     vector<vector<Pixel>> matriz;
     imagen.dimensionar();
 
@@ -220,32 +275,120 @@ void ArchivoPNM::LeerP6(Imagen &imagen, ifstream &archi)
     imagen.setImagen(matriz);
 }
 
+void ArchivoPNM::agregarExtensionPNM(Imagen &imagen, string rutaImagen)
+{
+    string tipoArchivo = imagen.getCodigo();
+
+    if(tipoArchivo == "P6" or tipoArchivo == "P3")
+    {
+        rutaImagen+=".ppm";
+    }
+    else if (tipoArchivo == "P5" or tipoArchivo == "P2")
+    {
+        rutaImagen+=".pgm";
+    }
+    else if (tipoArchivo == "P4" or tipoArchivo == "P1")
+    {
+       rutaImagen+=".pbm";
+    }
+}
+
 void ArchivoPNM::AlmacenarP1(Imagen &imagen, ofstream &archisalida)
 {
+    Pixel Pauxiliar;
+
+    for(int f=0; f<imagen.getAncho(); f++)
+    {
+        for(int c=0; c<imagen.getAncho(); c++)
+        {
+            Pauxiliar = imagen.DevolverPixel(f,c);
+            archisalida<< Pauxiliar.getR()<<" ";
+        }
+    }
 
 }
 
 void ArchivoPNM::AlmacenarP2(Imagen &imagen, ofstream &archisalida)
 {
+    Pixel Pauxiliar;
 
+    for(int f=0; f<imagen.getAncho(); f++)
+    {
+        for(int c=0; c<imagen.getAncho(); c++)
+        {
+            Pauxiliar = imagen.DevolverPixel(f,c);
+            archisalida<< Pauxiliar.getR()<<" ";
+        }
+    }
 }
 
 void ArchivoPNM::AlmacenarP3(Imagen &imagen, ofstream &archisalida)
 {
+    Pixel Pauxiliar;
+    float R,G,B;
 
+    for(int f=0; f<imagen.getAncho(); f++)
+    {
+        for(int c=0; c<imagen.getAncho(); c++)
+        {
+            Pauxiliar = imagen.DevolverPixel(f,c);
+            R=Pauxiliar.getR();
+            G=Pauxiliar.getG();
+            B=Pauxiliar.getB();
+            archisalida<<R<<" "<<G<<" "<<B<<" ";
+        }
+    }
 }
 
 void ArchivoPNM::AlmacenarP4(Imagen &imagen, ofstream &archisalida)
 {
+    Pixel Pauxiliar;
 
+    for(int f=0; f<imagen.getAncho(); f++)
+    {
+        for(int c=0; c<imagen.getAncho(); c++)
+        {
+            Pauxiliar = imagen.DevolverPixel(f,c);
+            float valor = Pauxiliar.getR();
+            archisalida.write((char*)&valor, sizeof (float));
+
+        }
+    }
 }
 
 void ArchivoPNM::AlmacenarP5(Imagen &imagen, ofstream &archisalida)
 {
+    Pixel Pauxiliar;
+
+    for(int f=0; f<imagen.getAncho(); f++)
+    {
+        for(int c=0; c<imagen.getAncho(); c++)
+        {
+            Pauxiliar = imagen.DevolverPixel(f,c);
+            float valor = Pauxiliar.getR();
+            archisalida.write((char*)&valor, sizeof (float));
+        }
+    }
 
 }
 
 void ArchivoPNM::AlmacenarP6(Imagen &imagen, ofstream &archisalida)
 {
+    Pixel Pauxiliar;
 
+    for(int f=0; f<imagen.getAncho(); f++)
+    {
+        for(int c=0; c<imagen.getAncho(); c++)
+        {
+            Pauxiliar = imagen.DevolverPixel(f,c);
+            float valorR = Pauxiliar.getR();
+            float valorG = Pauxiliar.getG();
+            float valorB = Pauxiliar.getB();
+
+            archisalida.write((char*)&valorR, sizeof (float));
+            archisalida.write((char*)&valorG, sizeof (float));
+            archisalida.write((char*)&valorB, sizeof (float));
+
+        }
+    }
 }

@@ -11,7 +11,7 @@ public:
     Archivo();
     virtual ~Archivo();
     virtual Imagen leerImagen(string nombreArchivo)=0;
-    virtual void escribirImagen(Imagen& imagen, string nombreArchivo, string directorio)=0;
+    virtual void escribirImagen(Imagen& imagen, string directorio)=0;
 };
 
 

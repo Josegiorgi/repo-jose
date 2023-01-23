@@ -9,7 +9,9 @@ public:
     ArchivoAIC();
     ~ArchivoAIC();
     Imagen leerImagen(string nombreArchivo) override ;
-    void escribirImagen(Imagen& imagen, string nombreArchivo, string directorio) override;
+    void escribirImagen(Imagen& imagen, string directorio) override;
+private:
+    void agregarExtension(string codigo, string directorio);
 };
 
 

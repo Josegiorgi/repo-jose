@@ -1,6 +1,7 @@
-#include <QCoreApplication>
+#include <QApplication>
 #include <gestordearchivos.h>
 #include <interfazdeusuario.h>
+#include <visualizador.h>
 #include <string>
 #include <iostream>
 
@@ -8,14 +9,15 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
+    QApplication app(argc, argv);
 
     InterfazdeUsuario interfaz;
     GestordeArchivos gestor;
 
-    cout<<"Trabajo final;"<<endl;
+
+    cout<<"Trabajo final"<<endl;
     cout<<"Selecciona la opcion a elegir:"<<endl<<endl;
-    gestor.setRuta("../Proyecto final JG/");
+    gestor.setRuta("C:/Users/Jose/OneDrive/Documentos/Proyecto final JG/");
     string ruta = gestor.getRuta();
     gestor.setRaiz("Autotest/");
     string raiz = gestor.getRaiz();
@@ -42,18 +44,16 @@ int main(int argc, char *argv[])
     string fromato = gestor.reconocerFormato();
     cout<<"El formato es: "<<fromato<<endl;
 
-
-    if(opcion!= 0)
+    if (opcion!=0)
     {
-        gestor.generarImagen(opcion+1);
+        Visualizador grafica(&gestor,opcion+1);
+        grafica.resize(300,300);
+        grafica.show();
+        app.exec();
     }
 
 
 
 
-
-
-
-
-    return a.exec();
+    return app.exec();
 }

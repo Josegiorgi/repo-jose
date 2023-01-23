@@ -24,7 +24,7 @@ public:
     const string &getRuta() const;
     void setRuta(const string &newRuta);
 
-    //void setListadoDeArchivos(string rutaDirectorio);
+    void setListadoDeArchivos(string rutaDirectorio);
     vector<string> getListadoDeArchivos(string rutaDirectorio);
     string getArchivos(int ID);
 
