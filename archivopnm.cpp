@@ -16,378 +16,320 @@ ArchivoPNM::~ArchivoPNM()
 
 Imagen ArchivoPNM::leerImagen(string nombreArchivo)
 {
-    ifstream archi;
+    ifstream archiEntrada;
     Imagen imagen;
-    string codigo, descripcion, numeral;
-    int M, fila, columna;
+    string codigoImagen, descripcion, numeral, auxiliar;
+    int M, filas, columnas;
 
-    archi.open(nombreArchivo,ios::in|ios::binary);
-    if(archi.is_open())
+    archiEntrada.open(nombreArchivo,ios::in|ios::binary);
+
+    try
     {
-        cout<<"SE ABRE ARHCIVO"<<endl;
-        {   //leer codigo
-            archi>>codigo;
-            imagen.setCodigo(codigo);
-            archi>>numeral;
+        if(archiEntrada.is_open())
+        {
+            archiEntrada>>codigoImagen;
+            imagen.setCodigo(codigoImagen);
+            archiEntrada>>numeral;
             if (numeral != "#")
             {
-                cout<<"imagencorrupta";
+                throw((string)"La imagen a leer no respeta el formato correcto, es corrupta. ");
             }
 
-        }
-        {
-            //leer descripcion
-            getline(archi, descripcion);
+            getline(archiEntrada, descripcion);
             descripcion.erase(0,1);
             imagen.setDescripcion(descripcion);
-        }
-        {
-            //leer tamanio
-            archi>>columna>>fila;
-            imagen.setAlto(fila);
-            imagen.setAncho(columna);
-        }
-        {
-            //leer M
-            archi>>M;
+
+            archiEntrada>>columnas>>filas;
+            if (columnas == 0 or filas == 0)
+            {
+                throw ((string)"La imagen es corrupta posee un ancho y alto que no corresponden. ");
+            }
+            else
+                imagen.setAlto(filas);
+            imagen.setAncho(columnas);
+
+            archiEntrada>>M;
             imagen.setRangoDinamico(M);
+            archiEntrada.ignore();
+
+            switch (codigoImagen[1]){
+            case '1': leerP1(imagen, archiEntrada);
+                break;
+            case '2': leerP2(imagen, archiEntrada);
+                break;
+            case '3': leerP3(imagen, archiEntrada);
+                break;
+            case '4': leerP4(imagen, archiEntrada);
+                break;
+            case '5': leerP5(imagen, archiEntrada);
+                break;
+            case '6': leerP6(imagen, archiEntrada);
+                break;
+            default: cout<< "No se reconoce el codigo de la imagen a guardar.";
+            }
         }
 
-
-    if (codigo == "P1")
-    {
-        imagen.setCodigonumerico(1);
     }
-    if (codigo == "P2")
+    catch (string &error)
     {
-        imagen.setCodigonumerico(2);
-    }
-    if (codigo == "P3")
-    {
-        imagen.setCodigonumerico(3);
-    }
-    if (codigo == "P4")
-    {
-        imagen.setCodigonumerico(4);
-    }
-    if (codigo == "P5")
-    {
-        imagen.setCodigonumerico(5);
-    }
-    if (codigo == "P6")
-    {
-        imagen.setCodigonumerico(6);
+        cout<<endl<<error<<endl;
     }
 
-    switch (imagen.getCodigonumerico()){
-    case 1: LeerP1(imagen, archi);
-        break;
-    case 2: LeerP2(imagen, archi);
-        break;
-    case 3: LeerP3(imagen, archi);
-        break;
-    case 4: LeerP4(imagen, archi);
-        break;
-    case 5: LeerP5(imagen, archi);
-        break;
-    case 6: LeerP6(imagen, archi);
-        break;
-    default: cout<< "No se reconoce el codigo de la imagen a guardar.";
-    }}
-    else cout<<"No se abre"<<endl;
+    archiEntrada.close();
     return imagen;
 }
 
 
 
-void ArchivoPNM::escribirImagen(Imagen &imagen, string directorio)
+void ArchivoPNM::guardarImagen(Imagen &pImagen, string directorio)
 {
-    string tipoImagen = imagen.getCodigo();
-    agregarExtensionPNM(imagen, directorio);
+    string codigoImagen = pImagen.getCodigo();
+    string extension = devolverExtensionPnm(pImagen);
 
-    ofstream archisalida;
-    archisalida.open (directorio);
-    if (archisalida.is_open())
+    ofstream archiSalida;
+    archiSalida.open (directorio + extension, ios::binary);
+    if (archiSalida.is_open())
     {
-        cout<<"SE GUARDA ARCHIVO";
-        archisalida<<imagen.getCodigo();
-        archisalida<<"# "<<imagen.getDescripcion();
-        archisalida<<imagen.getAncho()<<" "<<imagen.getAlto();
+        //cout<<"SE GUARDA ARCHIVO";
+        archiSalida<<codigoImagen<<endl;
+        archiSalida<<"# "<<pImagen.getDescripcion()<<endl;
+        archiSalida<<pImagen.getAncho()<<" "<<pImagen.getAlto()<<endl;
 
-        if (tipoImagen != "P1" and tipoImagen != "P4")
+        if(codigoImagen != "P1" and codigoImagen != "P4")
         {
-            archisalida<<imagen.getRangoDinamico()<<endl;
-        }
-
-        if (tipoImagen == "P1")
-        {
-            imagen.setCodigonumerico(1);
-        }
-        if (tipoImagen == "P2")
-        {
-            imagen.setCodigonumerico(2);
-        }
-        if (tipoImagen == "P3")
-        {
-            imagen.setCodigonumerico(3);
-        }
-        if (tipoImagen == "P4")
-        {
-            imagen.setCodigonumerico(4);
-        }
-        if (tipoImagen == "P5")
-        {
-            imagen.setCodigonumerico(5);
-        }
-        if (tipoImagen == "P6")
-        {
-            imagen.setCodigonumerico(6);
+            archiSalida<<pImagen.getRangoDinamico()<<endl;
         }
 
-        switch (imagen.getCodigonumerico()){
-        case 1: AlmacenarP1(imagen, archisalida);
+
+        switch (codigoImagen[1]){
+        case '1': almacenarP1(pImagen, archiSalida);
             break;
-        case 2: AlmacenarP2(imagen, archisalida);
+        case '2': almacenarP2(pImagen, archiSalida);
             break;
-        case 3: AlmacenarP3(imagen, archisalida);
+        case '3': almacenarP3(pImagen, archiSalida);
             break;
-        case 4: AlmacenarP4(imagen, archisalida);
+        case '4': almacenarP4(pImagen, archiSalida);
             break;
-        case 5: AlmacenarP5(imagen, archisalida);
+        case '5': almacenarP5(pImagen, archiSalida);
             break;
-        case 6: AlmacenarP6(imagen, archisalida);
+        case '6': almacenarP6(pImagen, archiSalida);
             break;
         default: cout<< "No se reconoce el codigo de la imagen a guardar.";
         }
-    archisalida.close();
+        archiSalida.close();
     }
-    else cout<<"No se pudo crear archisalida";
 }
 
-void ArchivoPNM::LeerP1(Imagen &imagen, ifstream &archi)
+void ArchivoPNM::leerP1(Imagen &imagen, ifstream &archiEntrada)
 {
-    float auxiliar;
-    vector<vector<Pixel>> matriz;
+    float auxiliar=0;
+    imagen.dimensionarImagen();
     imagen.setRangoDinamico(1);
-    imagen.dimensionar();
-    archi.ignore();
 
     for(int f=0; f<imagen.getAlto();f++){
         for(int c=0; c<imagen.getAncho();c++){
 
-            archi>>auxiliar;
-            Pixel Pauxiliar(auxiliar, auxiliar, auxiliar);
-            matriz[f][c]= Pauxiliar;
+            archiEntrada>>auxiliar;
+            Pixel pAuxiliar (auxiliar,auxiliar,auxiliar);
+            imagen.generarPixel(pAuxiliar,f,c);
         }
     }
-    imagen.setImagen(matriz);
 
 }
 
-void ArchivoPNM::LeerP2(Imagen &imagen, ifstream &archi)
+void ArchivoPNM::leerP2(Imagen &imagen, ifstream &archiEntrada)
 {
-    float auxiliar;
-    vector<vector<Pixel>> matriz;
-    imagen.dimensionar();
+    float auxiliar=0;
+    imagen.dimensionarImagen();
 
     for(int f=0; f<imagen.getAlto();f++){
         for(int c=0; c<imagen.getAncho();c++){
 
-            archi>>auxiliar;
-            Pixel Pauxiliar(auxiliar, auxiliar, auxiliar);
-            matriz[f][c]= Pauxiliar;
+            archiEntrada>>auxiliar;
+            Pixel pAuxiliar(auxiliar, auxiliar, auxiliar);
+            imagen.generarPixel(pAuxiliar,f,c);
         }
     }
-    imagen.setImagen(matriz);
 }
 
-void ArchivoPNM::LeerP3(Imagen &imagen, ifstream &archi)
+void ArchivoPNM::leerP3(Imagen &imagen, ifstream &archiEntrada)
 {
-    float r, g ,b;
-    vector<vector<Pixel>> matriz;
-    imagen.dimensionar();
+    float r=0, g=0 ,b =0;
+    imagen.dimensionarImagen();
 
     for(int f=0; f<imagen.getAlto();f++){
         for(int c=0; c<imagen.getAncho();c++){
 
-            archi>>r>>g>>b;
+            archiEntrada>>r>>g>>b;
             Pixel Pauxiliar(r, g, b);
-            matriz[f][c]= Pauxiliar;
+            imagen.generarPixel(Pauxiliar,f,c);
         }
     }
-    imagen.setImagen(matriz);
 }
 
-void ArchivoPNM::LeerP4(Imagen &imagen, ifstream &archi)
+void ArchivoPNM::leerP4(Imagen &imagen, ifstream &archiEntrada)
 {
-    char auxiliar;
-    vector<vector<Pixel>> matriz;
+    unsigned char auxiliar=0;
+    imagen.dimensionarImagen();
     imagen.setRangoDinamico(1);
-    imagen.dimensionar();
-    archi.ignore();
+
 
     for(int f=0; f<imagen.getAlto();f++){
         for(int c=0; c<imagen.getAncho();c++){
 
-            archi.read((char * ) &auxiliar , sizeof(auxiliar));
-            Pixel Pauxiliar(auxiliar, auxiliar, auxiliar);
-            matriz[f][c]= Pauxiliar;
+            archiEntrada.read((char * ) &auxiliar , sizeof(auxiliar));
+            Pixel pAuxiliar(auxiliar, auxiliar, auxiliar);
+            imagen.generarPixel(pAuxiliar,f,c);
         }
     }
-    imagen.setImagen(matriz);
 }
 
-void ArchivoPNM::LeerP5(Imagen &imagen, ifstream &archi)
+void ArchivoPNM::leerP5(Imagen &imagen, ifstream &archiEntrada)
 {
-    char auxiliar;
-    vector<vector<Pixel>> matriz;
-    imagen.dimensionar();
+    unsigned char auxiliar=0;
+    imagen.dimensionarImagen();
 
 
     for(int f=0; f<imagen.getAlto();f++){
         for(int c=0; c<imagen.getAncho();c++){
 
-            archi.read((char * ) &auxiliar , sizeof(auxiliar));
-            Pixel Pauxiliar(auxiliar, auxiliar, auxiliar);
-            matriz[f][c]= Pauxiliar;
+            archiEntrada.read((char * ) &auxiliar , sizeof(auxiliar));
+            Pixel pAuxiliar(auxiliar, auxiliar, auxiliar);
+            imagen.generarPixel(pAuxiliar,f,c);
         }
     }
-    imagen.setImagen(matriz);
 }
 
-void ArchivoPNM::LeerP6(Imagen &imagen, ifstream &archi)
+void ArchivoPNM::leerP6(Imagen &imagen, ifstream &archiEntrada)
 {
-    char r, g, b;
-    vector<vector<Pixel>> matriz;
-    imagen.dimensionar();
+    unsigned char r=0, g=0, b=0;
+    imagen.dimensionarImagen();
 
 
     for(int f=0; f<imagen.getAlto();f++){
         for(int c=0; c<imagen.getAncho();c++){
 
-            archi.read((char * ) &r , sizeof(r));
-            archi.read((char * ) &g , sizeof(r));
-            archi.read((char * ) &b , sizeof(r));
-            Pixel Pauxiliar(r, g, b);
-            matriz[f][c]= Pauxiliar;
+            archiEntrada.read((char * ) &r , sizeof(r));
+            archiEntrada.read((char * ) &g , sizeof(g));
+            archiEntrada.read((char * ) &b , sizeof(b));
+            Pixel pAuxiliar(r, g, b);
+            imagen.generarPixel(pAuxiliar,f,c);
         }
     }
-    imagen.setImagen(matriz);
 }
 
-void ArchivoPNM::agregarExtensionPNM(Imagen &imagen, string rutaImagen)
+string ArchivoPNM::devolverExtensionPnm(Imagen &imagen)
 {
     string tipoArchivo = imagen.getCodigo();
 
     if(tipoArchivo == "P6" or tipoArchivo == "P3")
     {
-        rutaImagen+=".ppm";
+        return ".ppm";
     }
     else if (tipoArchivo == "P5" or tipoArchivo == "P2")
     {
-        rutaImagen+=".pgm";
+        return ".pgm";
     }
-    else if (tipoArchivo == "P4" or tipoArchivo == "P1")
-    {
-       rutaImagen+=".pbm";
-    }
+    else
+
+        return ".pbm";
+
 }
 
-void ArchivoPNM::AlmacenarP1(Imagen &imagen, ofstream &archisalida)
+void ArchivoPNM::almacenarP1(Imagen &imagen, ofstream &archiSalida)
 {
     Pixel Pauxiliar;
 
-    for(int f=0; f<imagen.getAncho(); f++)
+    for(int f=0; f<imagen.getAlto(); f++)
     {
         for(int c=0; c<imagen.getAncho(); c++)
         {
-            Pauxiliar = imagen.DevolverPixel(f,c);
-            archisalida<< Pauxiliar.getR()<<" ";
+            Pauxiliar = imagen.devolverPixel(f,c);
+            archiSalida<<Pauxiliar.getR()<<" ";
         }
     }
 
 }
 
-void ArchivoPNM::AlmacenarP2(Imagen &imagen, ofstream &archisalida)
+void ArchivoPNM::almacenarP2(Imagen &imagen, ofstream &archiSalida)
 {
     Pixel Pauxiliar;
 
-    for(int f=0; f<imagen.getAncho(); f++)
+    for(int f=0; f<imagen.getAlto(); f++)
     {
         for(int c=0; c<imagen.getAncho(); c++)
         {
-            Pauxiliar = imagen.DevolverPixel(f,c);
-            archisalida<< Pauxiliar.getR()<<" ";
+            Pauxiliar = imagen.devolverPixel(f,c);
+            archiSalida<<Pauxiliar.getR()<<" ";
         }
     }
 }
 
-void ArchivoPNM::AlmacenarP3(Imagen &imagen, ofstream &archisalida)
+void ArchivoPNM::almacenarP3(Imagen &imagen, ofstream &archiSalida)
 {
     Pixel Pauxiliar;
     float R,G,B;
 
-    for(int f=0; f<imagen.getAncho(); f++)
+    for(int f=0; f<imagen.getAlto(); f++)
     {
         for(int c=0; c<imagen.getAncho(); c++)
         {
-            Pauxiliar = imagen.DevolverPixel(f,c);
+            Pauxiliar = imagen.devolverPixel(f,c);
             R=Pauxiliar.getR();
             G=Pauxiliar.getG();
             B=Pauxiliar.getB();
-            archisalida<<R<<" "<<G<<" "<<B<<" ";
+            archiSalida<<R<<" "<<G<<" "<<B<<" ";
         }
     }
 }
 
-void ArchivoPNM::AlmacenarP4(Imagen &imagen, ofstream &archisalida)
+void ArchivoPNM::almacenarP4(Imagen &imagen, ofstream &archiSalida)
 {
     Pixel Pauxiliar;
 
-    for(int f=0; f<imagen.getAncho(); f++)
+    for(int f=0; f<imagen.getAlto(); f++)
     {
         for(int c=0; c<imagen.getAncho(); c++)
         {
-            Pauxiliar = imagen.DevolverPixel(f,c);
-            float valor = Pauxiliar.getR();
-            archisalida.write((char*)&valor, sizeof (float));
+            Pauxiliar = imagen.devolverPixel(f,c);
+            unsigned char valor = Pauxiliar.getR();
+            archiSalida.write((const char*)&valor, sizeof (valor));
 
         }
     }
 }
 
-void ArchivoPNM::AlmacenarP5(Imagen &imagen, ofstream &archisalida)
+void ArchivoPNM::almacenarP5(Imagen &imagen, ofstream &archiSalida)
 {
     Pixel Pauxiliar;
 
-    for(int f=0; f<imagen.getAncho(); f++)
+    for(int f=0; f<imagen.getAlto(); f++)
     {
         for(int c=0; c<imagen.getAncho(); c++)
         {
-            Pauxiliar = imagen.DevolverPixel(f,c);
-            float valor = Pauxiliar.getR();
-            archisalida.write((char*)&valor, sizeof (float));
+            Pauxiliar = imagen.devolverPixel(f,c);
+            unsigned char valor = Pauxiliar.getR();
+            archiSalida.write((const char*)&valor, sizeof (valor));
         }
     }
 
 }
 
-void ArchivoPNM::AlmacenarP6(Imagen &imagen, ofstream &archisalida)
+void ArchivoPNM::almacenarP6(Imagen &imagen, ofstream &archiSalida)
 {
     Pixel Pauxiliar;
 
-    for(int f=0; f<imagen.getAncho(); f++)
+    for(int f=0; f<imagen.getAlto(); f++)
     {
         for(int c=0; c<imagen.getAncho(); c++)
         {
-            Pauxiliar = imagen.DevolverPixel(f,c);
-            float valorR = Pauxiliar.getR();
-            float valorG = Pauxiliar.getG();
-            float valorB = Pauxiliar.getB();
-
-            archisalida.write((char*)&valorR, sizeof (float));
-            archisalida.write((char*)&valorG, sizeof (float));
-            archisalida.write((char*)&valorB, sizeof (float));
+            Pauxiliar = imagen.devolverPixel(f,c);
+            unsigned char valorR = Pauxiliar.getR();
+            unsigned char valorG = Pauxiliar.getG();
+            unsigned char valorB = Pauxiliar.getB();
+            archiSalida.write((const char*)&valorR, sizeof (valorR));
+            archiSalida.write((const char*)&valorG, sizeof (valorG));
+            archiSalida.write((const char*)&valorB, sizeof (valorB));
 
         }
     }

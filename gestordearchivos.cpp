@@ -6,111 +6,122 @@
 #include "iostream"
 #include <dirent.h>
 
+
 using namespace std;
 
 GestordeArchivos::GestordeArchivos()
 {
-
+   ruta = "C:/Users/Jose/OneDrive/Documentos/Proyecto final JG/";
 }
 
 GestordeArchivos::~GestordeArchivos()
 {
 
 }
-Imagen GestordeArchivos::generarImagen(int pID)
+Imagen GestordeArchivos::generarImagen()
 {
-    IDimagen=pID;
     Imagen imagen;
     string extension;
     extension= reconocerFormato();
-    if(extension == ".pbm" or  extension == ".pgm" or  extension == ".ppm" or  extension == ".pnm")
-        ptrArchivo = new ArchivoPNM;
-    else if(extension == ".aic")
-        ptrArchivo = new ArchivoAIC;
-    else (throw (string) "No se reconoce");
+    try {
 
-    imagen = ptrArchivo->leerImagen(RutaCarpeta + getArchivos(pID));
+        if(extension == ".pbm" or  extension == ".pgm" or  extension == ".ppm" or  extension == ".pnm")
+            ptrArchivo = new ArchivoPNM;
+        else if(extension == ".aic")
+            ptrArchivo = new ArchivoAIC;
+        else (throw (string) "No se reconoce tipo de archivo");
+    }
+    catch (string &error)
+    {
+        delete ptrArchivo;
+        cout<<endl<<error<<endl;
+    }
+
+    imagen = ptrArchivo->leerImagen(ruta + rutaCarpeta + getArchivos(idImagen));
 
     delete ptrArchivo;
     return imagen;
 }
 
-void GestordeArchivos::guardarImagen(string nombreImagen, Imagen &imagen)
+void GestordeArchivos::guardarImagen(string pNombre,Imagen &pImagen)
 {
-  string directorio = "../Imagenes_guardadas/" + nombreImagen;
-  string codigo = imagen.getCodigo();
+    string directorio = "C:/Users/Jose/OneDrive/Documentos/Proyecto final JG/Autotest/imagenes_guardadas/" + pNombre;
+    string codigo = pImagen.getCodigo();
 
-  if (codigo=="P2C")
-  {
-      ptrArchivo= new ArchivoAIC;
-  }
-  else
-      ptrArchivo = new ArchivoPNM;
-
-  ptrArchivo-> escribirImagen(imagen,directorio);
-  delete ptrArchivo;
-}
-
-string GestordeArchivos::reconocerFormato() //lleva control de error
-{
-    string nombre = getArchivos(IDimagen);//devuelve un string
-    return nombre.substr(nombre.find_last_of('.'), nombre.size());                                     //tomar las ultimas 3 letras y ver que objeto se crea
-
-}
-
-const vector<string> &GestordeArchivos::getListaCarpeta() const
-{
-    return listaCarpeta;
-}
-
-void GestordeArchivos::setListaCarpeta(string Ruta, int ID)
-{
-    RutaCarpeta =  Ruta + getArchivos(ID-1) + "/";
-    listaArchivos.clear();
-    listaCarpeta = getListadoDeArchivos(RutaCarpeta);
-}
-
-int GestordeArchivos::getIDimagen() const
-{
-    return IDimagen;
-}
-
-void GestordeArchivos::setIDimagen(int opcion)
-{
-    IDimagen = opcion;
-}
-const string &GestordeArchivos::getRuta() const
-{
-    return ruta;
-}
-
-void GestordeArchivos::setRuta(const string &newRuta)
-{
-    ruta = newRuta;
-}
-
-void GestordeArchivos::setListadoDeArchivos(string rutaDirectorio)
-{
-
-    vector<string> Lista = getListadoDeArchivos(rutaDirectorio);
-    string extension;
-    string nombre;
-
-    for(unsigned int i=0 ; i<Lista.size() ; i++)
+    if (codigo=="P2C")
     {
-        nombre = Lista[i];
-        extension = nombre.substr(nombre.find_last_of('.'), nombre.size());
-        if(extension == ".pbm" or  extension == ".pgm" or  extension == ".ppm" or  extension == ".pnm" or extension == ".aic")
-        {
-            listaArchivos.push_back(nombre);
-        }
+        ptrArchivo= new ArchivoAIC;
     }
+    else
+        ptrArchivo = new ArchivoPNM;
+
+    ptrArchivo-> guardarImagen(pImagen,directorio);
+    delete ptrArchivo;
 }
 
-vector<string> GestordeArchivos::getListadoDeArchivos(string rutaDirectorio)
+void GestordeArchivos::guardarUltimaImagen(Imagen &pImagen)
 {
-    //vector<string> lista_de_archivos;
-    DIR *dir = opendir(rutaDirectorio.c_str());
+    string directorio = "C:/Users/Jose/OneDrive/Documentos/Proyecto final JG/Autotest/ultima_imagen/UltimaImagen" ;
+    string codigo = pImagen.getCodigo();
+
+    if (codigo=="P2C")
+    {
+        ptrArchivo= new ArchivoAIC;
+    }
+    else
+        ptrArchivo = new ArchivoPNM;
+
+    ptrArchivo-> guardarImagen(pImagen,directorio);
+    delete ptrArchivo;
+}
+
+void GestordeArchivos::edicionFormatoguardar(Imagen &pImagen, int pEleccion)
+{
+    string codigo = pImagen.getCodigo();
+
+    if(pEleccion==1)
+    {
+        if (codigo=="P4")
+            pImagen.setCodigo("P1");
+        if(codigo=="P5")
+            pImagen.setCodigo("P2");
+        if(codigo=="P6")
+            pImagen.setCodigo("P3");
+    }
+    if(pEleccion==2)
+    {
+        if (codigo=="P1")
+            pImagen.setCodigo("P4");
+        if(codigo=="P2")
+            pImagen.setCodigo("P5");
+        if(codigo=="P3")
+            pImagen.setCodigo("P6");
+    }
+    if(pEleccion==3)
+    {
+        pImagen.setCodigo("P2C");
+    }
+
+}
+string GestordeArchivos::reconocerFormato()
+{
+    string nombre = getArchivos(idImagen);//devuelve un string
+    return nombre.substr(nombre.find_last_of('.'), nombre.size());//tomar las ultimas 3 letras y ver que objeto se crea
+}
+string GestordeArchivos::getRaiz()
+{
+    return raiz;
+}
+
+void GestordeArchivos::setRaiz(string pRaiz)
+{
+    raiz = pRaiz;
+}
+vector<string> GestordeArchivos::getListadoDeArchivos(string pRaiz)
+{
+    listaArchivos.clear();
+    string directorio = ruta + pRaiz;
+    DIR *dir = opendir(directorio.c_str());
     if (dir != NULL)
     {
         string pto("."), ptopto("..");
@@ -126,18 +137,30 @@ vector<string> GestordeArchivos::getListadoDeArchivos(string rutaDirectorio)
     }
     return listaArchivos;
 }
-
-const string &GestordeArchivos::getRaiz() const
+string GestordeArchivos::getArchivos(int pID)
 {
-    return raiz;
+    return listaArchivos[pID];
+}
+void GestordeArchivos::setListaImagenes(string pRaiz, int pID)
+{
+    listaImagenes.clear();
+    rutaCarpeta = pRaiz + getArchivos(pID) + "/";
+    listaImagenes = getListadoDeArchivos(rutaCarpeta);
+}
+vector<string> GestordeArchivos::getListaImagenes()
+{
+    return listaImagenes;
+}
+int GestordeArchivos::getIDimagen()
+{
+    return idImagen;
 }
 
-void GestordeArchivos::setRaiz(const string &newRaiz)
+void GestordeArchivos::setIDimagen(int pOpcion)
 {
-    raiz = newRaiz;
+    idImagen = pOpcion;
 }
-string GestordeArchivos::getArchivos(int ID)
-{
-    return listaArchivos[ID-1];
-}
+
+
+
 

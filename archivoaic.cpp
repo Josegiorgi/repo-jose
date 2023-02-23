@@ -14,130 +14,129 @@ ArchivoAIC::~ArchivoAIC()
 
 Imagen ArchivoAIC::leerImagen(string nombreArchivo)
 {
-    ifstream archi;
+    ifstream archiEntrada;
     Imagen imagen;
-    string codigo, descripcion, numeral;
-    int M, fila, columna;
+    string codigoImagen, descripcion, numeral;
+    int M;
+    int fila=0, columna=0;
 
-    archi.open(nombreArchivo);
-    if(archi.is_open())
+    archiEntrada.open(nombreArchivo);
+
+    try
     {
-        cout<<"SE ABRE ARHCIVO"<<endl;
-        {   //leer codigo
-            archi>>codigo;
-            cout<<codigo<<endl;
-            imagen.setCodigo(codigo);
-            archi>>numeral;
+        if(archiEntrada.is_open())
+        {
+            archiEntrada>>codigoImagen;
+            if (codigoImagen != "P2C")
+            {
+                throw((string) "El codigo de la imagen no se reconoce, es corrupta.");
+            }
+            else
+                imagen.setCodigo(codigoImagen);
+
+            archiEntrada>>numeral;
             if (numeral != "#")
             {
-                cout<<"imagencorrupta";
+                throw((string)"La imagen es corrupta, no respeta el formato correcto. ");
             }
-        }
-        {
-            //leer descripcion
-            getline(archi, descripcion);
+
+            getline(archiEntrada, descripcion);
             descripcion.erase(0,1);
             imagen.setDescripcion(descripcion);
-            cout<<descripcion<<endl;
-        }
-        {
-            //leer tamanio
-            archi>>columna>>fila;
-            cout<<fila<<" "<<columna<<endl;
-            imagen.setAlto(fila);
+
+            archiEntrada>>columna>>fila;
+            if (columna == 0 or fila == 0)
+            {
+                throw ((string)"La imagen es corrupta posee un ancho y alto que no corresponden. ");
+            }
+            else
+                imagen.setAlto(fila);
             imagen.setAncho(columna);
-        }
-        {
-            //leer M
-            archi>>M;
-            cout<<M;
+
+            archiEntrada>>M;
             imagen.setRangoDinamico(M);
-        }}
+            archiEntrada.ignore();
 
-    else cout<<"No se abre";
+        }
 
-    archi.ignore();
-    int valor, repeticion, pixelesFila = 0;
-    vector<vector<Pixel>> matrizimagen;
-    imagen.dimensionar();
-
-    for(int i=0 ; i<imagen.getAlto() ; i++)
-    {
-        do
-        {
-            archi >> valor >> repeticion;
-            for(int j=0 ; j<repeticion ; j++)
-                matrizimagen[i][pixelesFila + j] = Pixel(valor,valor,valor);
-                        pixelesFila += repeticion;
-
-        } while( pixelesFila < imagen.getAncho() );
     }
-  imagen.setImagen(matrizimagen);
+    catch (string &error)
+    {
+        cout<<endl<<error<<endl;
+    }
 
-  return imagen;
+    imagen.dimensionarImagen();
+
+    float intensidad = 0;
+    unsigned int contador = 0;
+
+    for(int f = 0; f < fila; f++)
+    {
+        int PixelesporFila = 0;
+
+        while(PixelesporFila < columna)
+        {
+            archiEntrada>>intensidad>>contador;
+            Pixel pAuxiliar(intensidad,intensidad,intensidad);
+            for(unsigned int i = 0; i < contador; i ++)
+            {
+                int auxiliar = PixelesporFila + i;
+                imagen.generarPixel(pAuxiliar,f, auxiliar);
+            }
+            PixelesporFila += contador;
+        }
+    }
+    return imagen;
 }
 
 
-void ArchivoAIC::escribirImagen(Imagen &imagen, string directorio)
+void ArchivoAIC::guardarImagen(Imagen &pImagen, string directorio)
 {
-    string tipoArchivo = imagen.getCodigo();
-    agregarExtension(tipoArchivo,directorio);
+    string codigoImagen = pImagen.getCodigo();
+    string extension = devolverExtensionAic();
+    unsigned int filas = pImagen.getAlto();
+    unsigned int columnas = pImagen.getAncho();
 
-    ofstream archisalida;
-    archisalida.open(directorio);
-    if(archisalida.is_open())
+    ofstream archiSalida;
+    archiSalida.open(directorio+extension);
+    if(archiSalida.is_open())
     {
-        cout<<"se crea archivo";
-        archisalida<<imagen.getCodigo();
-        archisalida<<"# "<<imagen.getDescripcion();
-        archisalida<<imagen.getAncho()<<" "<<imagen.getAlto();
-        archisalida<<imagen.getRangoDinamico();
+        archiSalida<<codigoImagen<<endl;
+        archiSalida<<"# "<<pImagen.getDescripcion()<<endl;
+        archiSalida<<columnas<<" "<<filas<<endl;
+        archiSalida<<pImagen.getRangoDinamico()<<endl;
 
-        unsigned int repeticion = 1, filas = imagen.getAlto(), columnas = imagen.getAncho();
-        float valorpixel, prueba;
-        Pixel Pauxiliar1, Pprueba;
 
-        for(unsigned int f=0; f<filas; f++)
+        int valorPixel = pImagen.devolverPixel(0,0).getR();
+        unsigned int repeticiones = 1;
+
+        for(unsigned int f = 0; f < filas ; f++)
         {
-            Pixel Pauxiliar1;
-            Pauxiliar1 = imagen.DevolverPixel(f,0);
-            valorpixel = Pauxiliar1.getR();
-            for(unsigned int c=1; c<columnas; c++)
+            for(unsigned int c = 1; c < columnas ; c++)
             {
-                Pprueba = imagen.DevolverPixel(f,c);
-                prueba = Pprueba.getR();
 
-                if (prueba==valorpixel)
+                int pValorPixel = pImagen.devolverPixel(f,c).getR();
+
+                if(valorPixel == pValorPixel)
                 {
-                    repeticion++;
-                    if(c == (columnas-1))
-                    {
-                        archisalida<<valorpixel<<" "<<repeticion<<" ";
-
-                    }
-                    else
-                    {
-                        archisalida<<valorpixel<<" "<<repeticion<<" ";
-                        valorpixel=prueba;
-                        repeticion=1;
-                        if (c == (columnas-1))
-                        {
-                         archisalida<<valorpixel<<" "<<repeticion<<" ";
-                        }
-                    }
+                    repeticiones++;
+                }
+                else
+                {
+                    archiSalida<<valorPixel<<" "<<repeticiones<<" ";
+                    valorPixel = pValorPixel;
+                    repeticiones = 1;
                 }
             }
-            repeticion = 1;
+
+            archiSalida<<valorPixel<<" "<<repeticiones<<" ";
+            repeticiones=1;
+
         }
-     archisalida.close();
+        archiSalida.close();
     }
-    else cout<<"No se pudo crear";
-
 }
-
-void ArchivoAIC::agregarExtension(string codigo, string directorio)
+string ArchivoAIC::devolverExtensionAic()
 {
-    //agregar excepcion
-    if(codigo == "P2C")
-        directorio += ".aic";
+    return ".aic";
 }

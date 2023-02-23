@@ -5,27 +5,27 @@ Imagen::Imagen()
 
 }
 
-void Imagen::GenerarPixel(Pixel pixel , int fila, int columna)
+void Imagen::generarPixel(Pixel pPix , int pFila, int pColumna)
 {
-    imagen[fila][columna] = pixel;
+    imagen[pFila][pColumna] = pPix;
 }
 
-Pixel Imagen::DevolverPixel(int fila, int columna)
+Pixel Imagen::devolverPixel(int pFila, int pColumna)
 {
-    return imagen [fila][columna];
+    return imagen [pFila][pColumna];
 }
 
-int Imagen::getAlto() const
+int Imagen::getAlto()
 {
     return alto;
 }
 
-void Imagen::setAlto(unsigned int valorAlto)
+void Imagen::setAlto( int valorAlto)
 {
     alto = valorAlto;
 }
 
-int Imagen::getAncho() const
+int Imagen::getAncho()
 {
     return ancho;
 }
@@ -35,16 +35,16 @@ void Imagen::setAncho(int valorAncho)
     ancho = valorAncho;
 }
 
-int Imagen::getRangoDinamico() const
+int Imagen::getRangoDinamico()
 {
-    return RangoDinamico;
+    return rangoDinamico;
 }
 
-void Imagen::setRangoDinamico(int M)
+void Imagen::setRangoDinamico(int pM)
 {
-    RangoDinamico = M;
+    rangoDinamico = pM;
 }
-void Imagen::dimensionar()
+void Imagen::dimensionarImagen()
 {
     imagen.resize(alto);
     for (int i=0; i<alto; i++)
@@ -53,45 +53,30 @@ void Imagen::dimensionar()
     }
 }
 
-const string &Imagen::getCodigo() const
+string Imagen::getCodigo()
 {
     return codigo;
 }
 
-void Imagen::setCodigo(const string &newCodigo)
+void Imagen::setCodigo(string pCodigo)
 {
-    codigo = newCodigo;
+    codigo = pCodigo;
 }
 
-const string &Imagen::getDescripcion() const
+string Imagen::getDescripcion()
 {
     return descripcion;
 }
 
-void Imagen::setDescripcion(const string &newDescripcion)
+void Imagen::setDescripcion(string pDescripcion)
 {
-    descripcion = newDescripcion;
+    descripcion = pDescripcion;
 }
-
-const vector<vector<Pixel> > &Imagen::getImagen() const
-{
-    return imagen;
-}
-
-void Imagen::setImagen(const vector<vector<Pixel> > &newImagen)
+void Imagen::setImagen(vector<vector<Pixel> > newImagen)
 {
     imagen = newImagen;
 }
 
-int Imagen::getCodigonumerico() const
-{
-    return codigonumerico;
-}
-
-void Imagen::setCodigonumerico(int newCodigonumerico)
-{
-    codigonumerico = newCodigonumerico;
-}
 
 
 
